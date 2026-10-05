@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>STATFORGE — Pixel Academy: Battle of Minds</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="stylesheet" href="css/style.css"></head><body>
+<canvas id="gl"></canvas><div id="labels"></div>
+
+<div id="hud"><div id="hl" class="pn"><b id="hn"></b> · <span id="hc"></span><div class="xb"><i id="xf"></i></div><span id="hx"></span> &nbsp; <span style="color:#6ff">◆</span> <b id="hg">0</b> &nbsp; <span style="color:#ffd84a">★</span> <b id="hp">0</b>P</div>
+<div id="hm" class="pn"><div id="hlv">PIXEL ACADEMY</div><div id="ht"></div></div><div id="cross">+</div><div id="prompt"></div></div>
+
+<div id="menu" class="scr on"><h1 class="logo">STATFORGE</h1><p class="tag">Pixel Academy: Battle of Minds</p>
+<div class="mb pn"><button class="btn" id="m1">Solo Adventure</button><button class="btn b" id="m2">Solo vs AI</button><button class="btn g" id="m3">Multiplayer</button><button class="btn b" id="mSet">Audio</button></div>
+<div class="note">Controls: W A S D move · Mouse look · SPACE jump · E interact · ESC pause</div></div>
+
+<div id="ai" class="scr dim"><div class="pn mb"><div class="ttl">CHOOSE AI DIFFICULTY</div><button class="btn g" data-d="easy">Easy</button><button class="btn" data-d="medium">Medium</button><button class="btn r" data-d="hard">Hard</button><button class="btn b" id="aiB">Back</button></div></div>
+
+<div id="mp" class="scr dim"><div class="pn mb"><div class="ttl">MULTIPLAYER LOBBY — OFFLINE MOCK</div>
+<button class="btn" id="mpC">Create Room</button><input id="mpJ" placeholder="ROOM CODE" maxlength="4"><button class="btn b" id="mpJb">Join Room</button>
+<div id="mpS" class="note" style="color:#dfe8ff">No WebSocket server is connected. Real online play is not implemented in this prototype; the Net layer is ready for it.</div>
+<button class="btn g" id="mpAI" style="display:none">Practice vs AI (stand-in rival)</button><button class="btn r" id="mpB">Back</button></div></div>
+
+<div id="chars" class="scr" style="justify-content:space-between;padding:18px"><div style="text-align:center"><h1 class="logo" style="font-size:40px">CHOOSE YOUR SCHOLAR</h1></div>
+<div style="text-align:center"><div id="cards"></div><div style="margin:14px"><input id="nm" placeholder="YOUR NAME" maxlength="12"> <button class="btn" id="go">Enter Pixel Academy</button> <button class="btn r" id="chB">Back</button></div></div></div>
+
+<div id="pz" class="scr dim" style="z-index:10"><div class="pn mb"><div class="ttl" id="pzt">PAUSED</div><button class="btn" id="pzR">Resume</button><button class="btn r" id="pzL" style="display:none">Leave Trial</button><button class="btn b" id="pzA">Audio</button><button class="btn b" id="pzM">Save &amp; Main Menu</button></div></div>
+
+<div id="dlg" class="pn"><div id="dn"></div><div id="dt"></div><div id="dh">▶ tap / press E</div></div>
+<div id="toast" class="pn"></div>
+
+<div id="l1" class="scr dim" style="z-index:6"><div class="row"><div class="pn"><div class="ttl">LEVEL 1 — RANKING OF PIECES</div><div id="l1s" style="margin-bottom:6px"></div><div id="l1g" class="grid"></div>
+<div style="margin-top:8px"><button class="btn b" id="l1sh">Shuffle Formation</button> <button class="btn r" id="l1x">Leave</button></div></div>
+<div class="pn side"><div class="ttl">SYMBOL RANKINGS (higher wins)</div><table id="l1t"></table><div id="l1i"></div><div class="ttl" style="margin-top:8px">LOST PIECES</div><div id="l1l"></div></div></div><div id="l1m" class="pn"></div></div>
+
+<div id="l2h" class="pn"><div id="l2t" style="font-size:24px;color:var(--gold)"></div><div id="l2y"></div><div class="pb"><i id="l2yb" style="background:var(--blu)"></i></div><div id="l2r"></div><div class="pb"><i id="l2rb" style="background:var(--red)"></i></div><div id="l2c" style="font-size:12px"></div></div>
+
+<div id="l4" class="pn"><div style="font-size:12px" id="l4n"></div><div id="l4q"></div><div id="l4tb"><div id="l4t"></div></div><div style="margin-top:8px"><input id="l4a" placeholder="answer" autocomplete="off"> <button class="btn g" id="l4b">Forge!</button></div></div>
+<div id="l4v"></div>
+
+<div id="l3" class="scr" style="z-index:6"><div class="pn" style="text-align:center;width:min(720px,94vw)"><div id="l3s" style="font-size:44px;font-weight:900;letter-spacing:4px"></div><div id="l3d" style="font-size:13px;color:#bfe3ff"></div><div class="pb" style="height:16px;margin:6px 0"><i id="l3t" style="background:#4aa8ff;width:100%"></i></div>
+<div style="display:flex;justify-content:space-between;font-size:20px;margin:6px 0"><span id="l3p"></span><span id="l3tn" style="color:var(--gold);font-size:14px"></span><span id="l3r"></span></div><div><input id="l3a" placeholder="type an example" autocomplete="off"> <button class="btn g" id="l3b">Answer</button></div><div id="l3m" style="font-size:13px;min-height:40px;margin-top:6px"></div></div></div><div id="l3e">ELIMINATED!</div>
+<div id="l5" class="scr" style="z-index:6"><div class="pn" style="width:min(700px,94vw)"><div style="display:flex;justify-content:space-between"><b id="l5h"></b><b id="l5t" style="color:var(--gold)"></b></div><div style="font-size:11px">YOU</div><div class="pb"><i id="l5y" style="background:var(--blu)"></i></div><div style="font-size:11px">RIVAL</div><div class="pb"><i id="l5r" style="background:var(--red)"></i></div><div id="l5b" style="margin-top:8px"></div><div id="l5m" style="font-size:13px;min-height:44px;margin-top:6px"></div></div></div>
+<div id="l6h" class="pn" style="position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:4;display:none;text-align:center;width:min(720px,94vw)"><div id="l6i" style="font-size:12px"></div><div id="l6q" style="font-size:20px;font-weight:bold;margin:4px 0"></div><div class="pb"><i id="l6c" style="background:#ffb347"></i></div><div id="l6cd" style="font-size:12px"></div><div style="display:flex;gap:6px;font-size:11px;align-items:center">YOU<div class="pb" style="flex:1"><i id="l6y" style="background:var(--blu)"></i></div></div><div style="display:flex;gap:6px;font-size:11px;align-items:center">RIVAL<div class="pb" style="flex:1"><i id="l6r" style="background:var(--red)"></i></div></div></div>
+<div id="aud" class="scr dim" style="z-index:14"><div class="pn mb"><div class="ttl">AUDIO</div><label>Music <input type="range" id="aM" min="0" max="100"> <input type="checkbox" id="aMm"> mute</label><label>SFX <input type="range" id="aS" min="0" max="100"> <input type="checkbox" id="aSm"> mute</label><button class="btn" id="aX">Close</button></div></div>
+<div id="shop" class="scr" style="z-index:7;justify-content:space-between;padding:14px;align-items:stretch;pointer-events:none"><div class="pn" style="pointer-events:auto;align-self:center"><b>STATFORGE STYLE SHOP</b> · <span style="color:#ffd84a">★</span> <b id="sp">0</b> points · <span id="smsg"></span></div>
+<div class="pn" style="pointer-events:auto"><div id="scat" class="row" style="gap:6px"></div><div id="sitems" class="row" style="margin:8px 0;gap:8px;justify-content:flex-start"></div><div><button class="btn g" id="sbuy">Buy</button> <button class="btn" id="seq">Equip</button> <button class="btn b" id="sun">Unequip slot</button> <button class="btn r" id="scn">Cancel preview</button> <button class="btn b" id="sL">◀</button> <button class="btn b" id="sR">▶</button> <button class="btn r" id="sx">Leave</button></div></div></div>
+<div id="tc"><div id="jb"><div id="jk"></div></div><div id="bj">JUMP</div><div id="bi">TALK</div></div><div id="bp">II</div>
+<div id="rot"><div class="pn">Please rotate your device to landscape mode for the best gameplay experience.<br><br><button class="btn" id="rotX">Continue anyway</button></div></div>
+<div id="vid" class="scr dim" style="z-index:11;justify-content:flex-start;padding:10px"><div class="pn" style="width:min(980px,96vw)"><div class="ttl" id="vt" style="font-size:clamp(20px,2vw + 10px,32px)"></div>
+<div id="vlist"></div><div id="vplay" style="display:none"><video id="vv" controls playsinline preload="metadata" style="width:100%;max-height:58vh;background:#000"></video><div id="vmiss" style="display:none;color:#ffb3ad;font-size:clamp(16px,1.3vw + 9px,21px);padding:8px"></div><div id="vdesc" class="vd"></div></div>
+<div style="margin-top:8px"><button class="btn r" id="vback">Back</button> <button class="btn b" id="vfs" style="display:none">Fullscreen</button> <button class="btn g" id="vcont" style="display:none">Continue</button></div></div></div>
+<div id="res" class="scr dim" style="z-index:12"><div class="pn res"><h2 id="rt"></h2><div id="rb" style="line-height:1.5"></div><br><button class="btn" id="rR">Return to Academy</button></div></div>
+
+<script src="js/core/main.js"></script></body></html>
