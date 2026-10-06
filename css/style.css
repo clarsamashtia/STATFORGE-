@@ -1,4 +1,3 @@
-
 :root{--pn:#2b3566;--pn2:#3a4787;--gold:#ffd84a;--ink:#f4f1e6;--red:#e2504a;--grn:#4bd17a;--blu:#4aa8ff}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#1b2140;font-family:"Courier New",monospace;color:var(--ink);user-select:none}
@@ -105,3 +104,10 @@ input{font-size:clamp(18px,1.4vw + 10px,24px)!important}
  #l1 .row>.pn:first-child>div:last-child{display:flex;flex-direction:column;gap:6px;margin:0!important}#l1 .row>.pn:first-child>div:last-child .btn{white-space:normal;max-width:150px;padding:6px 8px!important}
  #l1 .grid{--sw:clamp(240px,28vw,480px);--c:min(calc((100vh - 112px)/10),calc((100vw - var(--sw) - 230px)/10))!important}#l1 .side{width:clamp(240px,28vw,480px)!important}}
 @media(orientation:portrait){#l1{overflow:auto!important}#l1 .row{flex-direction:column;height:auto;min-height:100%}#l1 .row>.pn:first-child{width:100%}#l1 .grid{--c:calc((100vw - 44px)/10)!important}#l1 .side{width:100%!important;height:auto!important}}
+
+/* ===== LEVEL 6 readability: compact panel (right side), danger vignette ===== */
+#l6h{left:auto!important;right:10px!important;top:52px!important;transform:none!important;width:min(600px,60vw)!important;padding:6px 12px!important}
+#l6h #l6q{font-size:clamp(17px,1.4vw + 9px,25px)!important;margin:2px 0!important;line-height:1.25}#l6h .pb{height:8px!important;margin:2px 0!important}
+#l6h div[style*="display:flex"]{display:inline-flex!important;width:49%;box-sizing:border-box;padding-right:6px}
+#l6w{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;box-shadow:inset 0 0 110px 30px rgba(255,60,40,.75)}
+@media(max-height:560px){#l6h{top:46px!important;width:min(520px,58vw)!important}}
