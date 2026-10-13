@@ -1,3 +1,4 @@
+
 :root{--pn:#2b3566;--pn2:#3a4787;--gold:#ffd84a;--ink:#f4f1e6;--red:#e2504a;--grn:#4bd17a;--blu:#4aa8ff}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#1b2140;font-family:"Courier New",monospace;color:var(--ink);user-select:none}
@@ -111,3 +112,14 @@ input{font-size:clamp(18px,1.4vw + 10px,24px)!important}
 #l6h div[style*="display:flex"]{display:inline-flex!important;width:49%;box-sizing:border-box;padding-right:6px}
 #l6w{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;box-shadow:inset 0 0 110px 30px rgba(255,60,40,.75)}
 @media(max-height:560px){#l6h{top:46px!important;width:min(520px,58vw)!important}}
+
+/* ===== multiplayer lobby / HUD ===== */
+.mpw{width:min(560px,96vw);max-height:96vh;overflow:auto}.mpw .btn{width:100%;margin:5px 0}.mpst{font-weight:bold;font-size:clamp(15px,1.2vw + 9px,20px);margin-bottom:6px}
+.mpst.on{color:#6f6}.mpst.off{color:#f88}.mpst.wait{color:#ffd84a}.mprow{display:flex;gap:8px}.mprow .btn{flex:1}
+#mpn,#mpJ{width:100%;margin:4px 0;text-transform:uppercase}#mpch{display:flex;gap:6px;margin:4px 0}#mpch img{flex:1;min-width:0;height:clamp(54px,12vh,90px);object-fit:contain;background:#e9e9ee;border:3px solid #0c1130;cursor:pointer}#mpch img.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold)}
+.mpcode{font-size:clamp(34px,5vw,56px);font-weight:900;letter-spacing:8px;color:var(--gold);text-align:center}.mpp{display:flex;align-items:center;gap:10px;margin:6px 0;padding:6px;background:#1b2140;border:3px solid #0c1130;font-size:clamp(15px,1.2vw + 8px,20px)}
+.mpp img{height:56px;width:44px;object-fit:contain;background:#e9e9ee}.mpp .rd{margin-left:auto;font-weight:bold}.mpp .rd.y{color:#6f6}.mpp .rd.n{color:#ffb3ad}#mplvw select{width:100%;font:bold 18px "Courier New",monospace;padding:8px;margin:4px 0}
+#mpdata table{width:100%;border-collapse:collapse;font-size:clamp(13px,1vw + 8px,18px)}#mpdata td,#mpdata th{border-bottom:1px solid #fff3;padding:4px 6px;text-align:left}#mpdata tr.me{background:#ffd84a33}
+.mpbar{height:16px;background:#0c1130;border:3px solid #0c1130;margin:6px 0}.mpbar i{display:block;height:100%;background:var(--grn)}
+#mph{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);z-index:3;background:#0c1130cc;border:2px solid #fff4;padding:3px 10px;font-size:clamp(12px,.9vw + 7px,15px);font-weight:bold;pointer-events:none;display:none;white-space:nowrap}
+.mpres{margin-top:10px;padding:8px;border:3px solid var(--gold);background:#0c113099;text-align:left;font-size:clamp(15px,1.2vw + 8px,20px);line-height:1.5}
