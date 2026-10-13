@@ -1,0 +1,79 @@
+/* STATFORGE mobile / responsive layer. Loaded after style.css. Desktop rules are untouched: everything here is gated by
+   touch, small-width or small-height media queries. Layout is rearranged (not scaled down). */
+html,body{overflow:hidden;height:100%}
+#jz{position:fixed;left:0;bottom:0;width:48vw;height:62vh;touch-action:none;pointer-events:auto;z-index:5}
+#jb{width:clamp(104px,26vh,150px)!important;height:clamp(104px,26vh,150px)!important;left:max(14px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));opacity:.55;transition:opacity .1s;z-index:6}
+#jb.hot{opacity:.9}#jk{width:42%!important;height:42%!important}
+#bj{width:clamp(78px,19vh,108px)!important;height:clamp(78px,19vh,108px)!important;right:max(18px,env(safe-area-inset-right))!important;bottom:max(22px,env(safe-area-inset-bottom))!important;font-size:clamp(15px,2.6vh,19px)!important;opacity:.85}
+#bi{width:clamp(70px,16vh,92px)!important;height:clamp(70px,16vh,92px)!important;right:calc(max(18px,env(safe-area-inset-right)) + clamp(86px,21vh,118px))!important;bottom:calc(max(22px,env(safe-area-inset-bottom)) + clamp(40px,10vh,64px))!important;font-size:clamp(14px,2.4vh,18px)!important}
+#bp{width:48px!important;height:48px!important;top:max(8px,env(safe-area-inset-top))!important;right:max(8px,env(safe-area-inset-right))!important;font-size:18px!important}
+#l2b{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));z-index:6;flex-direction:column;align-items:center;gap:6px;width:min(96vw,640px)}
+#l2i{background:#0c1130dd;border:3px solid var(--gold);padding:4px 12px;font-weight:bold;font-size:clamp(17px,1.6vw + 10px,24px);text-align:center;max-width:100%}
+#l2b .l2r{display:flex;gap:10px;width:100%}#l2b .btn{flex:1;min-height:clamp(58px,13vh,84px);font-size:clamp(16px,1.4vw + 9px,22px)!important;color:#fff;margin:0}#l2n{background:#e8862e!important}
+#rot{display:none!important}#rot.show{display:flex!important;position:fixed;inset:calc(var(--hudh,48px) + 4px) 0 auto 0;background:transparent;padding:0;z-index:60;pointer-events:none}
+#rot .pn{pointer-events:none;margin:0 auto;display:flex;gap:10px;align-items:center;padding:6px 12px;font-size:clamp(14px,1vw + 9px,18px)}#rot .btn{min-height:40px;padding:4px 14px!important;font-size:16px!important}
+body[data-ctl="move"] #toast,body[data-ctl="sort"] #toast{bottom:calc(max(150px,30vh) + env(safe-area-inset-bottom))}
+body[data-ctl="sort"] #toast{bottom:calc(max(110px,24vh) + env(safe-area-inset-bottom))}
+#hud.on{padding-top:env(safe-area-inset-top)}
+@media(max-width:700px),(max-height:520px){
+ #hud.on{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;align-content:flex-start;padding:max(6px,env(safe-area-inset-top)) 62px 0 max(8px,env(safe-area-inset-left))}
+ #hl,#hm{position:static!important;transform:none!important;min-width:0!important;margin:0}
+ #hl{padding:4px 10px!important;font-size:clamp(13px,3.4vw,16px)!important;line-height:1.35;white-space:nowrap}#hl .xb,#hl #hx{display:none}
+ #hm{display:flex;gap:10px;align-items:center;padding:4px 10px!important;font-size:clamp(13px,3.2vw,16px)!important}
+ #hlv{max-width:calc(100vw - 250px);min-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#ht{font-size:clamp(17px,4vw,24px)!important}
+ #l2h,#l4{top:calc(var(--hudh,52px) + 6px)!important;width:min(94vw,560px)!important;min-width:0!important;max-height:calc(100dvh - var(--hudh,52px) - 16px);overflow:auto}
+ #l3,#l5{justify-content:flex-start!important;align-items:center;padding:calc(var(--hudh,52px) + 6px) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;overflow:auto}
+ #l3 .pn,#l5 .pn{width:min(100%,720px)!important;max-height:none}
+ #l6h{top:calc(var(--hudh,52px) + 6px)!important;right:max(8px,env(safe-area-inset-right))!important;width:min(560px,calc(100vw - 16px))!important}
+ #l4v{right:max(8px,env(safe-area-inset-right));top:calc(var(--hudh,52px) + 90px);height:40%}
+ #dlg{bottom:max(10px,env(safe-area-inset-bottom));max-height:46vh;overflow:auto}
+ #l1t td,#l1t th{font-size:13px!important}
+}
+@media(max-width:700px) and (orientation:portrait){
+ #l6h{width:calc(100vw - 16px)!important;right:8px!important}#l6h #l6q{font-size:clamp(16px,4.4vw,22px)!important}
+ #l5 .row,#l5 [style*="display:flex"]{flex-wrap:wrap}
+}
+@media(max-height:520px) and (orientation:landscape){
+ #l3 .pn,#l5 .pn{padding:6px 10px}#l3s{font-size:clamp(26px,9vh,40px)!important}
+ #l6h{width:min(52vw,520px)!important}
+}
+
+/* ---- panels always start below the HUD (fixes desktop/tablet overlap of the timer with level panels) ---- */
+#l2h,#l4,#l6h{top:calc(var(--hudh,52px) + 8px)!important}
+#l3,#l5{padding-top:calc(var(--hudh,52px) + 8px)!important}
+#hlv{max-width:calc(50vw - 160px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:1100px){
+ #hud.on{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;align-content:flex-start;padding:max(6px,env(safe-area-inset-top)) 62px 0 max(8px,env(safe-area-inset-left))}
+ #hl,#hm{position:static!important;transform:none!important;min-width:0!important;margin:0}
+ #hm{display:flex;gap:10px;align-items:center}#hlv{max-width:calc(100vw - 330px)}
+ #l2h{min-width:0!important;width:min(94vw,560px)!important}
+}
+@media(max-width:700px),(max-height:520px){
+ #l4{left:max(8px,env(safe-area-inset-left))!important;transform:none!important;width:calc(100vw - 80px - env(safe-area-inset-left) - env(safe-area-inset-right))!important}
+ #l4 input{width:56%}
+}
+/* ---- Level 5 on phones: spreadsheet and calculator side by side in landscape, compact calculator ---- */
+@media(max-width:700px),(max-height:520px){
+ #l5 .pb{height:8px;margin:2px 0}#l5 .pn{padding:6px 8px}
+ .calc{grid-template-columns:repeat(5,minmax(44px,1fr))!important;gap:4px!important;padding:6px!important}.calc button{min-height:44px;font-size:clamp(16px,4vw,20px)}#cdsp{grid-column:1/-1;font-size:clamp(18px,4.4vw,24px)}
+ .xl td,.xl th{font-size:clamp(14px,3.6vw,17px)}.xl input{font-size:clamp(15px,3.8vw,18px)!important;width:100%}
+}
+@media(max-height:520px) and (orientation:landscape){#l5b>div[style*="flex"]{flex-wrap:nowrap!important;align-items:flex-start}.xl{flex:none}}
+
+/* Level 5 action buttons stay reachable without scrolling on phones */
+@media(max-width:700px),(max-height:520px){#l5c,#l5s{position:fixed!important;right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));z-index:8;min-width:130px;min-height:50px;box-shadow:0 0 0 3px #0c1130,6px 6px 0 #0006}#l5b{padding-bottom:70px}}
+/* ---- compact strips so the 3D view stays visible on phones ---- */
+@media(max-width:700px),(max-height:520px){
+ #l2h[style*="block"]{display:flex!important;flex-wrap:wrap;gap:2px 14px;justify-content:center;align-items:center;padding:4px 10px!important;left:max(8px,env(safe-area-inset-left))!important;right:64px!important;width:auto!important;transform:none!important}
+ #l2h .pb,#l2h #l2c{display:none!important}#l2h>div{font-size:clamp(14px,3.6vw,17px)!important;margin:0}#l2h #l2t{font-size:clamp(20px,5vw,26px)!important}
+}
+@media(max-height:520px) and (orientation:landscape){
+ #hl,#hm{font-size:13px!important;padding:3px 8px!important}#ht{font-size:18px!important}
+ #l6h{left:8px!important;right:56px!important;width:auto!important;top:calc(var(--hudh,46px) + 4px)!important;padding:3px 10px!important}
+ #l6h #l6q{font-size:clamp(14px,4.2vh,18px)!important;margin:1px 0!important}
+ #l6h #l6i,#l6h #l6cd{font-size:13px!important;display:inline-block;margin:0 6px}
+ #l6h .pb{height:6px!important;margin:2px 0!important}#l6h div[style*="display:flex"]{display:none!important}
+}
+#rot.show{inset:34vh 0 auto 0!important}
+@media(max-width:700px) and (orientation:portrait){#hlv{max-width:calc(100vw - 130px)!important}}
+#rot .btn{pointer-events:auto}
