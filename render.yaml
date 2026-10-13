@@ -1,0 +1,15 @@
+# Optional Render blueprint (you can also create the service by hand in the dashboard).
+services:
+  - type: web
+    name: statforge-server
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: SERVE_STATIC
+        value: "0"
+      - key: ALLOWED_ORIGINS
+        value: https://YOUR-NAME.github.io
