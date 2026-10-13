@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><title>STATFORGE — Pixel Academy: Battle of Minds</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<link rel="stylesheet" href="css/style.css"></head><body>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mobile.css"></head><body>
 <canvas id="gl"></canvas><div id="labels"></div>
 
 <div id="hud"><div id="hl" class="pn"><b id="hn"></b> · <span id="hc"></span><div class="xb"><i id="xf"></i></div><span id="hx"></span> &nbsp; <span style="color:#6ff">◆</span> <b id="hg">0</b> &nbsp; <span style="color:#ffd84a">★</span> <b id="hp">0</b>P</div>
@@ -13,11 +14,15 @@
 
 <div id="ai" class="scr dim"><div class="pn mb"><div class="ttl">CHOOSE AI DIFFICULTY</div><button class="btn g" data-d="easy">Easy</button><button class="btn" data-d="medium">Medium</button><button class="btn r" data-d="hard">Hard</button><button class="btn b" id="aiB">Back</button></div></div>
 
-<div id="mp" class="scr dim"><div class="pn mb"><div class="ttl">MULTIPLAYER LOBBY — OFFLINE MOCK</div>
-<button class="btn" id="mpC">Create Room</button><input id="mpJ" placeholder="ROOM CODE" maxlength="4"><button class="btn b" id="mpJb">Join Room</button>
-<div id="mpS" class="note" style="color:#dfe8ff">No WebSocket server is connected. Real online play is not implemented in this prototype; the Net layer is ready for it.</div>
-<button class="btn g" id="mpAI" style="display:none">Practice vs AI (stand-in rival)</button><button class="btn r" id="mpB">Back</button></div></div>
-
+<div id="mp" class="scr dim"><div class="pn mb mpw"><div class="ttl">MULTIPLAYER</div><div id="mpst" class="mpst"></div>
+<div id="mpv0"><div class="mpid"><input id="mpn" maxlength="12" placeholder="YOUR NAME"><div id="mpch"></div></div>
+<button class="btn r" id="mpQ">Ranked Match</button><button class="btn" id="mpC">Create Room</button>
+<div class="mpj"><input id="mpJ" placeholder="ROOM CODE" maxlength="6" autocapitalize="characters" autocomplete="off"> <button class="btn b" id="mpJb">Join Room</button></div>
+<button class="btn g" id="mpAI">Practice vs AI</button><div class="mprow"><button class="btn b" id="mpLB">Leaderboard</button><button class="btn b" id="mpMR">My Rank</button></div>
+<div id="mpS" class="note"></div><button class="btn" id="mpRetry" style="display:none">Retry</button><button class="btn r" id="mpB">Back</button></div>
+<div id="mpv1" style="display:none"><div class="mpcode" id="mpcode"></div><div id="mpplayers"></div><div id="mplvw"></div>
+<div class="mprow"><button class="btn g" id="mpRd">Ready</button><button class="btn" id="mpGo">Start Match</button></div><div id="mpS1" class="note"></div><button class="btn r" id="mpLeave">Leave Room</button></div>
+<div id="mpv2" style="display:none"><div id="mpdata"></div><button class="btn r" id="mpBack2">Back</button></div></div></div>
 <div id="chars" class="scr" style="justify-content:space-between;padding:18px"><div style="text-align:center"><h1 class="logo" style="font-size:40px">CHOOSE YOUR SCHOLAR</h1></div>
 <div style="text-align:center"><div id="cards"></div><div style="margin:14px"><input id="nm" placeholder="YOUR NAME" maxlength="12"> <button class="btn" id="go">Enter Pixel Academy</button> <button class="btn r" id="chB">Back</button></div></div></div>
 
@@ -50,4 +55,6 @@
 <div id="l6w"></div>
 <div id="res" class="scr dim" style="z-index:12"><div class="pn res"><h2 id="rt"></h2><div id="rb" style="line-height:1.5"></div><br><button class="btn" id="rR">Return to Academy</button></div></div>
 
-<script src="js/core/main.js"></script></body></html>
+<script src="js/core/main.js"></script>
+<script src="js/mobile/controls.js"></script>
+<script src="js/core/multiplayer.js"></script></body></html>
