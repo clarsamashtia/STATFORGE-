@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   /* ---------- configuration (edit ONLY this line after deploying the server) ---------- */
-  const PROD_WS = '';                                   // e.g. 'wss://statforge-server.onrender.com/ws'
+  const PROD_WS = 'wss://statforge-zf12.onrender.com/ws';
   function serverURL() {
     const q = new URLSearchParams(location.search).get('server'); let saved = '';
     if (q) { try { localStorage.setItem('statforge_server', q); } catch (e) {} }
