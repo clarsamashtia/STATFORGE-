@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   /* ---------- configuration (edit ONLY this line after deploying the server) ---------- */
-  const PROD_WS = 'wss://statforge-zf12.onrender.com/ws';                                  
+  const PROD_WS = '';                                   // e.g. 'wss://statforge-server.onrender.com/ws'
   function serverURL() {
     const q = new URLSearchParams(location.search).get('server'); let saved = '';
     if (q) { try { localStorage.setItem('statforge_server', q); } catch (e) {} }
@@ -263,7 +263,7 @@
   function onEv(d) {
     switch (d.k) {
       case 'l2': if (L2 && L2.mp) { L2.ai.i = d.i; L2.ai.s = d.s; if (d.i >= 10) { L2.fin = L2.fin || 'a'; l2end(); } } break;
-      case 'l3a': if (L3 && L3.mp) { if (L3.ph === 'ask' && L3.who === 1) l3remote(d.t); else L3.pend = d.t; } break;
+      case 'l3a': if (L3 && L3.mp) { if (L3.ph === 'ask' && L3.who === 1) l3remote(d.c); else L3.pend = d.c; } break;
       case 'l4': if (L4 && L4.mp) { L4.ah = d.h; L4.rw = d.w; if (d.ok) { L4.rok[d.q] = 1; if (d.q === L4.i && L4.ph === 'ask') L4.first = true; } } break;
       case 'l4end': if (L4 && L4.mp) { L4.rend = { h: d.h, lost: d.lost }; if (d.lost) L4.ah = 0; l4tryEnd(); } break;
       case 'l5': if (L5 && L5.mp) { L5.ai.i = d.i; L5.ai.m = d.m; l5ui(); if (d.i >= 10 && !L5.over) l5end(false, 'Your rival finished all the tasks first.'); } break;
@@ -274,16 +274,14 @@
   const _l2start = l2start; l2start = function () { _l2start(); if (live(2)) { L2.mp = true; L2.ai.c = 1e9; } };
   const _drop = drop; drop = function (t) { _drop(t); if (L2 && L2.mp) ev({ k: 'l2', i: L2.i, s: L2.s, m: L2.m }); };
   /* Level 3 (turns relayed; both sides judge the same answers with the same bank) */
-  function l3remote(t) { const s = L3; if (!s || s.ph !== 'ask' || s.who !== 1) return; const b = judge(t);
-    if (!b) return l3res(1, false, `Rival said <b>${esc(t)}</b>, which can't be verified as ${s.sc}. <b style="color:#f88">Rival loses a heart.</b>`);
-    if (b.sc !== s.sc) return l3res(1, false, `Rival said <b>${b.id}</b>, which is <b>${b.sc}</b>, not ${s.sc}. <b style="color:#f88">Rival loses a heart.</b>`);
-    if (s.used.has(b.id)) return l3res(1, false, `Rival repeated <b>${b.id}</b>. <b style="color:#f88">Rival loses a heart.</b>`);
-    s.used.add(b.id); s.ok[1]++; l3res(1, true, `Rival: <b>${b.id}</b> <b style="color:#6f6">✔</b> — valid ${s.sc} example.`); }
+  function l3remote(c) { const s = L3; if (!s || s.ph !== 'ask' || s.who !== 1) return; s.pk = c; const ex = exTxt(s.q.id);
+    if (c === s.sc) { s.ok[1]++; return l3res(1, true, `Rival chose <b>${s.sc}</b> for <b>${ex}</b> <b style="color:#6f6">✔</b> — correct.`); }
+    l3res(1, false, `Rival chose <b>${c}</b> for <b>${ex}</b>, but it is <b>${s.sc}</b>. <b style="color:#f88">Rival loses a heart.</b>`); }
   const _l3start = l3start; l3start = function () { _l3start(); if (live(3)) { L3.mp = true; L3.rv = CH[peerCh()]; l3fix(); } };
   const _l3turn = l3turn; l3turn = function () { _l3turn(); if (L3 && L3.mp) l3fix(); };
-  function l3fix() { const s = L3; if (!s.fixed || s.fixN !== s.n) { s.fixN = s.n; s.fixed = 1; if (!isHost()) s.who = 1 - s.who; } s.ai = null; $('l3a').disabled = s.who !== 0; $('l3b').disabled = s.who !== 0; if (s.who === 0 && s.ph === 'ask') $('l3a').focus(); l3ui(); if (s.who === 1 && s.pend) { const t = s.pend; s.pend = null; l3remote(t); } }
-  const _l3submit = l3submit; l3submit = function () { const s = L3, t = $('l3a').value.trim(); const ok = s && s.mp && s.ph === 'ask' && s.who === 0 && t; _l3submit(); if (ok) ev({ k: 'l3a', t }); };
-  $('l3b').onclick = l3submit;
+  function l3fix() { const s = L3; if (!s.fixed || s.fixN !== s.n) { s.fixN = s.n; s.fixed = 1; if (!isHost()) s.who = 1 - s.who; } s.ai = null; l3btns(); l3ui(); if (s.who === 1 && s.pend) { const c = s.pend; s.pend = null; l3remote(c); } }
+  const _l3pick = l3pick; l3pick = function (c) { const s = L3; const ok = s && s.mp && !INS && s.ph === 'ask' && s.who === 0; _l3pick(c); if (ok) ev({ k: 'l3a', c }); };
+  document.querySelectorAll('#l3g .l3c').forEach(b => b.onclick = () => l3pick(b.dataset.sc));
   /* Level 4 */
   const _l4start = l4start; l4start = function () { _l4start(); if (live(4)) { L4.mp = true; L4.rv = CH[peerCh()]; L4.rok = {}; } };
   const _l4ai = l4ai; l4ai = function () { if (L4 && L4.mp) return; return _l4ai(); };
