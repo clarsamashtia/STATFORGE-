@@ -26,8 +26,6 @@
   const act = () => (TOUCH ? 'Tap' : 'Press E');
   const OBJ = {
     1: () => '<b>GOAL:</b> capture the rival\'s <b>Data</b> flag before they take yours. Select a piece, then a highlighted square. Only Data Organization beats Data Interpretation.',
-    2: () => `<b>GOAL:</b> sort all 10 artifacts. Walk to the pedestal, ${TOUCH ? 'tap TALK/pick up' : 'press E'} to lift one, then choose <b>QUALITATIVE</b> (labels) or <b>QUANTITATIVE</b> (numbers). Beat the rival's score before time runs out.`,
-    3: () => '<b>GOAL:</b> type a correct example of the announced scale (Nominal, Ordinal, Interval or Ratio) within <b>10 seconds</b>. A wrong answer or timeout costs a heart; you have 2.',
     4: () => '<b>GOAL:</b> solve each problem to climb. Correct answers lift your tower; when time runs out the <b>water rises</b>. Stay above it.',
     5: () => '<b>GOAL:</b> finish the 10 tasks (spreadsheet, calculator, mean/median/mode scenarios) before your rival and the clock.',
     6: () => `<b>GOAL:</b> run through the temple. At each gate pick the lane with the <b>correct answer</b> ${TOUCH ? '(drag the joystick left or right)' : '(A/D or arrow keys)'}. A wrong lane costs you seconds. Reach the exit first.`
