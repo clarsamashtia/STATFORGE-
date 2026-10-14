@@ -18,9 +18,9 @@
 
   /* ---- Level 2 touch classification buttons (use the existing drop() logic) ---- */
   const b = document.createElement('div'); b.id = 'l2b';
-  b.innerHTML = '<div id="l2i"></div><div class="l2r"><button class="btn b" id="l2q">QUALITATIVE</button><button class="btn" id="l2n">QUANTITATIVE</button></div>';
+  b.innerHTML = '<div id="l2i"></div><div class="l2r"><button class="btn b" id="l2q">QUALITATIVE<small style="display:block;font-size:.62em;opacity:.8">words / labels</small></button><button class="btn" id="l2n">QUANTITATIVE<small style="display:block;font-size:.62em;opacity:.8">numbers / amounts</small></button></div>';
   document.body.appendChild(b);
-  const sortTap = type => e => { e.preventDefault(); if (!(L2 && !L2.over && L2.i < 10 && mode === 'l2' && !dlg && !paused)) return; if (!L2.carry) L2.carry = L2.q[L2.i]; drop(type); };
+  const sortTap = type => e => { e.preventDefault(); if (!(L2 && !L2.over && L2.i < 10 && mode === 'l2' && !dlg && !paused && !INS)) return; if (!L2.carry) L2.carry = L2.q[L2.i]; drop(type); };
   $('l2q').addEventListener('pointerdown', sortTap('ql')); $('l2n').addEventListener('pointerdown', sortTap('qn'));
 
   /* ---- floating joystick: the touch zone is the whole lower-left; the stick appears under the thumb ---- */
@@ -38,7 +38,7 @@
   let last = '';
   window.touchUI = function () {
     const kind = MCM.kind(), idle = !paused && !dlg && !resOpen;
-    const move = kind === 'move' && idle, sort = kind === 'sort' && idle && !!L2 && !L2.over, pause = TOUCH && mode !== 'menu' && mode !== 'chars';
+    const move = kind === 'move' && idle, sort = mode === 'l2' && idle && !INS && !!L2 && !L2.over, pause = TOUCH && mode !== 'menu' && mode !== 'chars';
     if (sort) { const it = L2.q[L2.i], t = it ? 'Item: ' + it[0] : 'All sorted!'; if ($('l2i').textContent !== t) $('l2i').textContent = t; }
     const key = [kind, move, move && !!near, sort, pause].join();
     if (key === last) return; last = key;
