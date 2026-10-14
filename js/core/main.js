@@ -178,7 +178,7 @@ function buildL4(){const a=[];T=[0,0,0,0];B(a,-8,-1,-7,16,1,17,'#5a6488');
 if(gl){buildAcademy();buildL2();buildL4()}
 
 /* ===== GAME STATE ===== */
-let mode='menu',scene='academy',paused=false,gm='solo',diff='medium',dlg=null,resOpen=false,sel=S.ch,near=null,D=[],DT=[],MVP=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],time=0,lt=0,L1=null,L2=null,L4=null;
+let mode='menu',scene='academy',paused=false,gm='solo',diff='medium',dlg=null,resOpen=false,sel=S.ch,near=null,D=[],DT=[],MVP=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],time=0,lt=0,L1=null,L2=null,L4=null,INS=false;
 const cam={yaw:0,pitch:.3},P={x:0,y:0,z:14,vy:0,yaw:0,ph:0,gy:0,mv:0,run:0,wasG:true,lvy:0,an:{s:'idle',t:0,land:0,act:null,at:0}},keys={},locked=()=>document.pointerLockElement===cv;
 const LB={};
 function lab(id,txt,x,y,z,cls){let e=LB[id];if(!e){e=document.createElement('div');e.className='lb '+(cls||'');$('labels').appendChild(e);LB[id]=e}
@@ -231,16 +231,34 @@ document.addEventListener('pointerlockchange',()=>{if(!locked()&&(W3())&&!resOpe
 document.addEventListener('mousemove',e=>{if((locked()||e.buttons)&&(W3())&&!paused){cam.yaw-=e.movementX*.0025;cam.pitch=clamp(cam.pitch+e.movementY*.0025,-.15,1.2)}});
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();keys[e.code]=true;
  if(dlg&&(e.code==='KeyE'||e.code==='Space'||e.code==='Enter')){dnext();return}
+ if(INS){if(e.code==='Enter'||e.code==='Space')insGo();return}
  if(e.code==='KeyE'&&near&&!paused&&!dlg&&(W3())){act('interact',.6);near.f()}
+ if(mode==='l2'&&!paused&&!dlg&&L2&&!L2.over&&(e.code==='Digit1'||e.code==='Digit2')){if(!L2.carry)L2.carry=L2.q[L2.i];drop(e.code==='Digit1'?'ql':'qn')}
+ if(mode==='l3'&&L3&&!paused&&!INS){const k=['Digit1','Digit2','Digit3','Digit4'].indexOf(e.code);if(k>=0)l3pick(['Nominal','Ordinal','Interval','Ratio'][k])}
  if(e.code==='Escape'&&(mode==='l1'||mode==='l3'||mode==='l4'||mode==='l5')&&!resOpen&&!paused)setPause(true)});
 addEventListener('keyup',e=>keys[e.code]=false);
 
 /* ===== LEVEL ENTRY / EXIT / RESULT ===== */
+/* ---- level instruction panel (Levels 2 and 3): the level does not run until Start Level is pressed ---- */
+const INSTR={
+2:()=>['TRIAL 2 · SORTING GAME',[['GOAL','Sort all 10 artifacts into the correct group before the 90-second timer ends, and score more correct sorts than your rival.'],
+ ['WORDS TO KNOW','<b style="color:#6ec1ff">QUALITATIVE</b> = described with words or labels (colors, names, types, opinions).<br><b style="color:#ffb347">QUANTITATIVE</b> = measured or counted with numbers (height, price, how many).'],
+ ['HOW TO PLAY','Read the <b>Item</b> name at the bottom. Then '+(TOUCH?'tap':'click or press <b>1</b> (Qualitative) / <b>2</b> (Quantitative)')+'. You can also walk (WASD / joystick), lift the artifact at the pedestal and drop it into a bin.'],
+ ['CHECKING','A message tells you right away if you were <b style="color:#6f6">correct</b> or <b style="color:#f88">incorrect</b>, and why.'],
+ ['FINISH','After 10 items (or when time runs out) the higher score wins. If scores tie, the one who finished first wins.']]],
+3:()=>['TRIAL 3 · NOMINAL, ORDINAL, INTERVAL OR RATIO',[['GOAL','Each question shows an example. Choose the measurement scale it belongs to: <b>Nominal</b>, <b>Ordinal</b>, <b>Interval</b> or <b>Ratio</b>.'],
+ ['HOW TO ANSWER',(TOUCH?'Tap':'Click')+' one of the four buttons'+(TOUCH?'':' (or press <b>1 2 3 4</b>')+(TOUCH?'.':').')+' You and your rival take turns; wait for your turn.'],
+ ['FEEDBACK','You see <b style="color:#6f6">CORRECT</b> or <b style="color:#f88">INCORRECT</b> with the right scale and a short reason. The next question starts by itself.'],
+ ['TIMER','You get <b>'+L3T+' seconds</b> per question. The bar and number count down. The timer starts only after you press Start Level. If time runs out you lose a heart.'],
+ ['FINISH','Each player has 2 hearts. A wrong answer or timeout costs one. The level ends when someone has no hearts, or after 30 questions (more hearts wins).']]]};
+function insShow(n){const d=INSTR[n]();INS=true;$('insT').textContent=d[0];$('insL').innerHTML=d[1].map(r=>`<div class="ir"><i class="ih">${r[0]}</i><span>${r[1]}</span></div>`).join('');show('ins');$('insB').focus&&0}
+function insGo(){if(!INS)return;INS=false;hide('ins');sfx('click')}
+$('insB').onclick=insGo;
 function enterLevel(n){$('prompt').style.display='none';RUNXP=0;lastWin=null;
  if(n===1){mode='l1';document.exitPointerLock();$('hlv').textContent='TRIAL 1 · RANKING OF PIECES';l1start()}
- if(n===2){mode='l2';setScene('l2');Object.assign(P,{x:0,y:0,z:9,vy:0});cam.yaw=0;cam.pitch=.35;$('hlv').textContent='TRIAL 2 · SORTING GAME';l2start()}
+ if(n===2){mode='l2';setScene('l2');Object.assign(P,{x:0,y:0,z:9,vy:0});cam.yaw=0;cam.pitch=.35;$('hlv').textContent='TRIAL 2 · SORTING GAME';document.body.dataset.lv='2';l2start()}
  if(n===4){mode='l4';setScene('l4');document.exitPointerLock();$('hlv').textContent='TRIAL 4 · COMPUTATION';l4start()}
- if(n===3){mode='l3';setScene('l3');document.exitPointerLock();$('hlv').textContent='TRIAL 3 · NOMINAL, ORDINAL, INTERVAL OR RATIO';l3start()}
+ if(n===3){mode='l3';setScene('l3');document.exitPointerLock();$('hlv').textContent='TRIAL 3 · NOMINAL, ORDINAL, INTERVAL OR RATIO';document.body.dataset.lv='3';l3start()}
  if(n===5){mode='l5';setScene('l5');document.exitPointerLock();$('hlv').textContent='TRIAL 5 · EXCEL TECH';l5start()}
  if(n===6){mode='l6';setScene('l6');cam.yaw=0;cam.pitch=.42;$('hlv').textContent='TRIAL 6 · THE FINAL';Object.assign(P,{x:0,y:0,z:6,vy:0});cam.yaw=0;cam.pitch=.3;l6start()}}
 function exitLevel(){hideLv();hide('l1');$('l2h').style.display='none';$('l4').style.display='none';$('l4v').style.display='none';$('toast').style.display='none';$('ht').textContent='';
@@ -316,7 +334,7 @@ const IT=[['Eye Color','ql','Eye color is a label (brown, blue, green): a qualit
 ['Height (cm)','qn','Height is measured with numbers: a quantity.'],['Weight (kg)','qn','Weight is a numeric measurement: quantitative.'],['Item Count','qn','A count (12 pens) is a number you can add and compare: quantitative.'],['Reaction Time (ms)','qn','Reaction time is measured in numbers: quantitative.'],['Monetary Value (₱)','qn','Money amounts are numeric: quantitative.']];
 const AIC=()=>({easy:{acc:.65,iv:9},medium:{acc:.85,iv:6.5},hard:{acc:.97,iv:5}}[diff]);
 function l2start(){const cf=AIC();L2={q:shuf(IT),i:0,carry:null,s:0,m:0,t:90,over:false,fin:null,ai:{i:0,s:0,c:cf.iv,cf}};$('l2h').style.display='block';$('l2h').style.display='block';
- say([[OL,'Sort each artifact into the correct bin. Speed matters, but so does accuracy.']])}
+ insShow(2)}
 const QN={ql:'QUALITATIVE',qn:'QUANTITATIVE'};
 function drop(type){const s=L2,it=s.carry,ok=it[1]===type;s.carry=null;s.i++;
  if(ok){s.s++;addXP(10);sfx('good');toast(`<b style="color:#6f6">✔ CORRECT</b> — ${it[0]} is ${QN[it[1]]}. ${it[2]}`,'good',3000)}
@@ -401,7 +419,7 @@ $('sL').onclick=()=>shopYaw-=.7;$('sR').onclick=()=>shopYaw+=.7;$('sx').onclick=
 /* ===== LEVELS 3, 5, 6 ===== */
 let L3=null,L5=null,L6=null,DYNCOL=[];
 function W3(){return mode==='academy'||mode==='l2'||mode==='l6'}
-function hideLv(){hide('l3');hide('l5');$('l6h').style.display='none';$('l3e').style.display='none';DYNCOL=[]}
+function hideLv(){INS=false;hide('ins');document.body.removeAttribute('data-lv');hide('l3');hide('l5');$('l6h').style.display='none';$('l3e').style.display='none';DYNCOL=[]}
 const fmt=n=>+(+n).toFixed(2);
 /* ---- LEVEL 3: NOMINAL, ORDINAL, INTERVAL OR RATIO ---- */
 const SCL={Nominal:'Names or labels with NO order (eye color, brand).',Ordinal:'Categories with a meaningful ORDER but unequal gaps (rank, rating).',Interval:'Ordered with EQUAL gaps but NO true zero (Celsius, calendar year).',Ratio:'Equal gaps AND a TRUE zero, so ratios make sense (height, age, money).'};
@@ -415,34 +433,41 @@ const BK=[];for(const sc in BANK)BANK[sc].forEach(e=>{const al=e.split('|');al.f
 const norm=t=>t.toLowerCase().replace(/[^a-z0-9 ()-]/g,' ').replace(/\s+/g,' ').trim();
 function judge(t){t=norm(t);let b=null;for(const k of BK)if(k.re.test(t)&&(!b||k.a.length>b.a.length))b=k;return b}
 const hr=n=>'♥'.repeat(Math.max(0,n))+'♡'.repeat(Math.max(0,2-n));
-const freeEx=sc=>BANK[sc].map(e=>e.split('|')[0]).filter(i=>!L3.used.has(i));
+/* Level 3 is now four-choice multiple choice: an example from BANK is shown and the player picks its scale.
+   Time per question: was 10 s, now L3T. */
+const L3T=20,L3SC=['Nominal','Ordinal','Interval','Ratio'];
+const exTxt=id=>{id=id.replace(/\biq\b/,'IQ').replace(/\bsat\b/,'SAT').replace(/\bph\b/,'pH');return id.charAt(0).toUpperCase()+id.slice(1)};
+function l3build(){const by={};for(const sc in BANK)by[sc]=shuf(BANK[sc].map(e=>e.split('|')[0]));const q=[];let r=0;
+ while(q.length<30){for(const sc of shuf(L3SC.slice())){const l=by[sc];q.push({id:l[r%l.length],sc})}r++}return q.slice(0,30)}
 function l3start(){const cf={easy:{acc:.55,t:[5,9]},medium:{acc:.8,t:[3,7]},hard:{acc:.95,t:[2,5]}}[diff];
- L3={cf,n:0,h:[2,2],used:new Set(),sc:'Nominal',deck:[],ph:'ask',t:10,who:0,ai:null,ft:0,over:false,ok:[0,0],ran:{s:'idle',t:0,d:0},rv:CH[(S.ch+1)%4]};
- show('l3');$('l3m').textContent='';l3turn()}
-function l3turn(){const s=L3,cy=s.n>>1,wi=s.n&1;if(!wi){if(!s.deck.length)s.deck=shuf(['Nominal','Ordinal','Interval','Ratio']);s.sc=s.deck.pop();sfx('click')}
- s.who=(wi+cy)%2;s.ph='ask';s.t=10;s.ai=s.who?{at:rnd(s.cf.t[0],s.cf.t[1]),ok:Math.random()<s.cf.acc}:null;
- $('l3a').value='';$('l3a').disabled=s.who!==0;$('l3b').disabled=s.who!==0;if(s.who===0)$('l3a').focus();l3ui()}
-function l3ui(){const s=L3;$('l3s').textContent=s.sc.toUpperCase();$('l3s').style.color=SCC[s.sc];$('l3d').textContent=SCL[s.sc];$('l3p').textContent=S.name+' '+hr(s.h[0]);$('l3r').textContent=hr(s.h[1])+' RIVAL';$('l3tn').textContent=s.over?'':(s.who===0?'YOUR TURN':'RIVAL TURN')}
-function l3res(who,ok,msg){const s=L3;s.ph='fb';s.ft=1.7;$('l3m').innerHTML=msg;$('l3a').disabled=true;$('l3b').disabled=true;
+ L3={cf,n:0,h:[2,2],qs:l3build(),q:null,sc:'Nominal',ph:'ask',t:L3T,who:0,ai:null,ft:0,over:false,ok:[0,0],pk:null,ran:{s:'idle',t:0,d:0},rv:CH[(S.ch+1)%4]};
+ show('l3');$('l3m').textContent='';l3turn();insShow(3)}
+function l3btns(){const s=L3;document.querySelectorAll('#l3g .l3c').forEach(b=>{b.disabled=!(s&&s.ph==='ask'&&s.who===0);b.classList.remove('ok','no')})}
+function l3turn(){const s=L3,cy=s.n>>1,wi=s.n&1;s.q=s.qs[s.n];s.sc=s.q.sc;sfx('click');
+ s.who=(wi+cy)%2;s.ph='ask';s.t=L3T;s.pk=null;s.ai=s.who?{at:rnd(s.cf.t[0],s.cf.t[1]),ok:Math.random()<s.cf.acc}:null;
+ $('l3m').innerHTML='';l3btns();l3ui()}
+function l3ui(){const s=L3;$('l3i').textContent='Q'+Math.min(30,s.n+1)+'/30 ·';$('l3s').textContent=exTxt(s.q.id);$('l3p').textContent=S.name+' '+hr(s.h[0]);$('l3r').textContent=hr(s.h[1])+' RIVAL';
+ $('l3tn').textContent=s.over?'':(s.ph==='ask'?(s.who===0?'YOUR TURN':'RIVAL TURN')+' · '+Math.max(0,Math.ceil(s.t))+'s':'')}
+function l3mark(pk){document.querySelectorAll('#l3g .l3c').forEach(b=>{b.disabled=true;if(b.dataset.sc===L3.sc)b.classList.add('ok');else if(b.dataset.sc===pk)b.classList.add('no')})}
+function l3res(who,ok,msg){const s=L3;s.ph='fb';s.ft=1.7;$('l3m').innerHTML=msg;l3mark(s.pk);
  if(ok){sfx('good');if(who===0){addXP(10);act('victory',.7)}else s.ran={s:'victory',t:0,d:.8}}
  else{sfx('bad');s.h[who]--;if(who===0)act('damage',.8);else s.ran={s:'damage',t:0,d:.8};
   if(s.h[who]<=0){s.over=true;s.ph='over';const e=$('l3e');e.textContent=who===0?'ELIMINATED!':'RIVAL ELIMINATED!';e.style.display='block';e.style.animation='none';void e.offsetWidth;e.style.animation='';if(who===0)act('defeat',3);else s.ran={s:'defeat',t:0,d:9};
-   setTimeout(()=>{if(L3)finish(3,who===1,[who===1?'Your rival ran out of hearts.':'You ran out of hearts.',`Valid examples — You: ${s.ok[0]} · Rival: ${s.ok[1]}`])},2300)}}
+   setTimeout(()=>{if(L3)finish(3,who===1,[who===1?'Your rival ran out of hearts.':'You ran out of hearts.',`Correct answers — You: ${s.ok[0]} · Rival: ${s.ok[1]}`])},2300)}}
  l3ui()}
-function l3submit(){const s=L3;if(!s||s.ph!=='ask'||s.who!==0)return;const t=$('l3a').value.trim();if(!t)return;const b=judge(t),eg=freeEx(s.sc),e=eg.length?pick(eg):'';
- if(!b)return l3res(0,false,`<b style="color:#f88">✖ INCORRECT</b> — I can't verify "${t}" as a ${s.sc} example. Try a standard one, such as <b>${e}</b>.`);
- if(b.sc!==s.sc)return l3res(0,false,`<b style="color:#f88">✖ INCORRECT</b> — <b>${b.id}</b> is <b>${b.sc}</b>, not ${s.sc}. ${SCL[b.sc]}`);
- if(s.used.has(b.id))return l3res(0,false,`<b style="color:#f88">✖ ALREADY USED</b> — "${b.id}" was already given.`);
- s.used.add(b.id);s.ok[0]++;l3res(0,true,`<b style="color:#6f6">✔ CORRECT</b> — <b>${b.id}</b> is ${s.sc}. ${SCL[s.sc]}`)}
-$('l3b').onclick=l3submit;$('l3a').addEventListener('keydown',e=>{if(e.key==='Enter')l3submit()});
-function l3ai(){const s=L3,ai=s.ai;s.ai=null;const eg=freeEx(s.sc);
- if(ai.ok&&eg.length){const id=pick(eg);s.used.add(id);s.ok[1]++;return l3res(1,true,`Rival: <b>${id}</b> <b style="color:#6f6">✔</b> — valid ${s.sc} example.`)}
- if(!ai.ok&&Math.random()<.5){const o=pick(Object.keys(BANK).filter(k=>k!==s.sc)),id=pick(BANK[o]).split('|')[0];return l3res(1,false,`Rival said <b>${id}</b>, which is <b>${o}</b>, not ${s.sc}. <b style="color:#f88">Rival loses a heart.</b>`)}}
+function l3pick(sc){const s=L3;if(!s||INS||s.ph!=='ask'||s.who!==0)return;s.pk=sc;const ex=exTxt(s.q.id);
+ if(sc===s.sc){s.ok[0]++;l3res(0,true,`<b style="color:#6f6">✔ CORRECT</b> — <b>${ex}</b> is <b>${s.sc}</b>. ${SCL[s.sc]}`)}
+ else l3res(0,false,`<b style="color:#f88">✖ INCORRECT</b> — <b>${ex}</b> is <b>${s.sc}</b>, not ${sc}. ${SCL[s.sc]}`)}
+document.querySelectorAll('#l3g .l3c').forEach(b=>b.onclick=()=>l3pick(b.dataset.sc));
+function l3ai(){const s=L3,ai=s.ai;s.ai=null;const ex=exTxt(s.q.id);
+ if(ai.ok){s.pk=s.sc;s.ok[1]++;return l3res(1,true,`Rival chose <b>${s.sc}</b> for <b>${ex}</b> <b style="color:#6f6">✔</b> — correct.`)}
+ if(Math.random()<.5){const o=pick(L3SC.filter(k=>k!==s.sc));s.pk=o;return l3res(1,false,`Rival chose <b>${o}</b> for <b>${ex}</b>, but it is <b>${s.sc}</b>. <b style="color:#f88">Rival loses a heart.</b>`)}
+ l3res(1,false,'⏱ <b>Rival ran out of time</b> and loses a heart.')}
 function l3update(dt){const s=L3;if(!s)return;s.ran.t+=dt;if(s.ran.d>0){s.ran.d-=dt;if(s.ran.d<=0)s.ran={s:'idle',t:0,d:0}}if(s.over)return;
- if(s.ph==='ask'){s.t-=dt;$('l3t').style.width=Math.max(0,s.t*10)+'%';$('l3t').style.background=s.t<3?'#e2504a':'#4aa8ff';
-  if(s.who===1&&s.ai&&10-s.t>=s.ai.at)l3ai();if(s.ph==='ask'&&s.t<=0)l3res(s.who,false,s.who?'⏱ <b>Rival ran out of time</b> and loses a heart.':'⏱ <b style="color:#f88">TIME UP</b> — no valid example in 10 seconds.')}
- else if(s.ph==='fb'){s.ft-=dt;if(s.ft<=0){s.n++;if(s.n>=30){s.over=true;const w=s.h[0]>s.h[1]||(s.h[0]===s.h[1]&&s.ok[0]>=s.ok[1]);finish(3,w,['Time is up — the debate ends on hearts.',`Hearts: You ${s.h[0]} · Rival ${s.h[1]}`])}else l3turn()}}}
-function drawL3(){const s=L3;drawChar(D,CH[S.ch],-3,.3,0,-Math.PI/2,0);drawChar(D,s.rv,3,.3,0,Math.PI/2,0,s.ran);crystal(-6,3,-3,SCC[s.sc],1);crystal(6,3,-3,SCC[s.sc],1);lab('l3a',S.name,-3,2.9,0);lab('l3b','RIVAL',3,2.9,0)}
+ if(s.ph==='ask'){s.t-=dt;$('l3t').style.width=Math.max(0,s.t/L3T*100)+'%';$('l3t').style.background=s.t<5?'#e2504a':'#4aa8ff';l3ui();
+  if(s.who===1&&s.ai&&L3T-s.t>=s.ai.at)l3ai();if(s.ph==='ask'&&s.t<=0)l3res(s.who,false,s.who?'⏱ <b>Rival ran out of time</b> and loses a heart.':`⏱ <b style="color:#f88">TIME UP</b> — no answer in ${L3T} seconds. It was <b>${exTxt(s.q.id)}</b> = <b>${s.sc}</b>.`)}
+ else if(s.ph==='fb'){s.ft-=dt;if(s.ft<=0){s.n++;if(s.n>=30){s.over=true;const w=s.h[0]>s.h[1]||(s.h[0]===s.h[1]&&s.ok[0]>=s.ok[1]);finish(3,w,['All 30 questions are done — hearts decide the winner.',`Hearts: You ${s.h[0]} · Rival ${s.h[1]} · Correct: You ${s.ok[0]}, Rival ${s.ok[1]}`])}else l3turn()}}}
+function drawL3(){const s=L3;drawChar(D,CH[S.ch],-3,.3,0,-Math.PI/2,0);drawChar(D,s.rv,3,.3,0,Math.PI/2,0,s.ran);crystal(-6,3,-3,'#ffd84a',1);crystal(6,3,-3,'#ffd84a',1);lab('l3a',S.name,-3,2.9,0);lab('l3b','RIVAL',3,2.9,0)}
 function buildL3(){const a=[];T=[0,0,0,0];for(let x=-12;x<12;x++)for(let z=-8;z<10;z++)Q(a,x,0,z,1,1,(x+z)&1?'#8a7aa8':'#7a6a98');
  B(a,-12,0,-9,24,8,1,'#3a2f5c');B(a,-12.5,0,-9,.5,8,19,'#3a2f5c');B(a,12,0,-9,.5,8,19,'#3a2f5c');
  [['#6ec1ff',-8],['#ffd84a',-3],['#7dff9a',2],['#ff8ab0',7]].forEach(b=>{B(a,b[1],2,-8.9,2.4,4,.15,b[0]);B(a,b[1]+.9,5.4,-8.8,.6,.6,.2,'#ffffff')});
@@ -648,7 +673,7 @@ function render(){const W=innerWidth,Hh=innerHeight;if(cv.width!==W||cv.height!=
  gl.uniformMatrix4fv(uM,false,new Float32Array(MVP));gl.uniform3fv(uF,sc.sky);gl.uniform1f(uFs,scene==='l6'?85:40);gl.disable(gl.BLEND);drawM(sc.mesh);drawD(D);
  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);drawD(DT);gl.depthMask(true);gl.disable(gl.BLEND)}
 function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-lt)/1000||0);lt=t;{const ak=resOpen?(lastWin?'victory':'defeat'):({menu:'menu',chars:'menu',academy:'academy',shop:'shop',l1:'level1',l2:'level2',l3:'level3',l4:'level4',l5:'level5',l6:'final'})[mode];AM.want=AUDIO.map[ak]||null;AM.tick(dt,(paused?.35:1)*(dlg?.6:1)*(resOpen?.4:1)*(vidOpen?0:1))}
- touchUI();if(!paused&&!resOpen)update(dt);else if(mode==='menu'||mode==='chars')time+=dt;render()}
+ touchUI();if(!paused&&!resOpen&&!INS)update(dt);else if(mode==='menu'||mode==='chars')time+=dt;render()}
 if(gl)requestAnimationFrame(frame);
 
 /* auto-pause when the tab is hidden so timers cannot be exploited */
