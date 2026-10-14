@@ -43,10 +43,13 @@
   const hideObj = () => { clearTimeout(hideT); clearTimeout(fadeT); obj.style.display = 'none'; };
 
   /* ---- academy compass ---- */
+  /* Ma'am Olga first: the arrow points at her until her opening dialogue has been read to the end,
+     then at the next open trial gate. (Saves from before this flag existed count as "read" once they have any progress.) */
+  const olgaRead = () => !!S.olgaRead || (S.olgaRead === undefined && !!S.intro && (S.xp > 0 || Object.keys(S.done || {}).length > 0));
   function target() {
-    const open = BUILT.find(k => tState(k) === 'open' && !S.done[k]);
-    const n = open || null; if (!n) return null;
-    const a = PA[n - 1]; return { n, x: 17 * Math.sin(a), z: -17 * Math.cos(a) };
+    if (!olgaRead()) return { n: 0, label: "MA'AM OLGA", x: 0, z: -9 };
+    const n = BUILT.find(k => tState(k) === 'open' && !S.done[k]); if (!n) return null;
+    const a = PA[n - 1]; return { n, label: 'TRIAL ' + n, x: 17 * Math.sin(a), z: -17 * Math.cos(a) };
   }
   function tick() {
     if (mode !== lastMode) {
@@ -62,7 +65,7 @@
     const s = Math.sin(cam.yaw), c = Math.cos(cam.yaw);
     const fwd = -s * dx - c * dz, right = c * dx - s * dz;   /* same axes the movement code uses */
     gi.style.transform = `rotate(${Math.atan2(right, fwd)}rad)`;
-    gt.textContent = `TRIAL ${t.n} · ${Math.round(dist)} m`;
+    gt.textContent = `${t.label} · ${Math.round(dist)} m`;
     arrow.style.display = 'block';
   }
   setInterval(tick, 80);
