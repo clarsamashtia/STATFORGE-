@@ -36,7 +36,7 @@ const CH=[
 {id:'tia',n:'Tia',t:'Glasses & top buns',b:'Thick black frames, short hair, bright smile.',skin:'#f6dcd2',hc:'#1d1a1c',eye:'#7a4b22',lip:'#d8304a',open:1,glasses:1,hs:{yb:1.42,ys:1.42,b:'short',w:.1,bun:'top'},ear:'none'},
 {id:'clar',n:'Clar',t:'Soft waves',b:'Wavy hair, big brown eyes, pearl earrings.',skin:'#f6dcd2',hc:'#1d1a1c',eye:'#7a4b22',lip:'#ea8f9c',hs:{yb:1.1,ys:1.05,b:'side',w:.14,wave:1},ear:'pearl'}];
 const STYL={skin:'#f0c8a0',hair:'#ff8ab8',top:'#ff6bb0',pants:'#8a2a6a',acc:'bow'};
-const OLGA={skin:'#f0c8a0',hair:'#c8c8d0',top:'#6a3a8a',pants:'#4a2a6a',acc:'olga'};
+const OLGA={skin:'#f0c8a0',hair:'#1d1a1c',top:'#6a3a8a',pants:'#4a2a6a',acc:'olga'};
 
 /* ===== MINI WEBGL VOXEL RENDERER (no libraries) ===== */
 let TOUCH=matchMedia('(pointer:coarse)').matches;if(TOUCH)document.body.classList.add('touch');
