@@ -233,7 +233,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(['Space',
  if(dlg&&(e.code==='KeyE'||e.code==='Space'||e.code==='Enter')){dnext();return}
  if(INS){if(e.code==='Enter'||e.code==='Space')insGo();return}
  if(e.code==='KeyE'&&near&&!paused&&!dlg&&(W3())){act('interact',.6);near.f()}
- if(mode==='l2'&&!paused&&!dlg&&L2&&!L2.over&&(e.code==='Digit1'||e.code==='Digit2')){if(!L2.carry)L2.carry=L2.q[L2.i];drop(e.code==='Digit1'?'ql':'qn')}
+ if(mode==='l2'&&!paused&&!dlg&&L2&&!L2.over&&L2.i<L2.q.length&&(e.code==='Digit1'||e.code==='Digit2')){if(!L2.carry)L2.carry=L2.q[L2.i];drop(e.code==='Digit1'?'ql':'qn')}
  if(mode==='l3'&&L3&&!paused&&!INS){const k=['Digit1','Digit2','Digit3','Digit4'].indexOf(e.code);if(k>=0)l3pick(['Nominal','Ordinal','Interval','Ratio'][k])}
  if(e.code==='Escape'&&(mode==='l1'||mode==='l3'||mode==='l4'||mode==='l5')&&!resOpen&&!paused)setPause(true)});
 addEventListener('keyup',e=>keys[e.code]=false);
@@ -245,7 +245,11 @@ const INSTR={
  ['WORDS TO KNOW','<b style="color:#6ec1ff">QUALITATIVE</b> = described with words or labels (colors, names, types, opinions).<br><b style="color:#ffb347">QUANTITATIVE</b> = measured or counted with numbers (height, price, how many).'],
  ['HOW TO PLAY','Read the <b>Item</b> name at the bottom. Then '+(TOUCH?'tap':'click or press <b>1</b> (Qualitative) / <b>2</b> (Quantitative)')+'. You can also walk (WASD / joystick), lift the artifact at the pedestal and drop it into a bin.'],
  ['CHECKING','A message tells you right away if you were <b style="color:#6f6">correct</b> or <b style="color:#f88">incorrect</b>, and why.'],
- ['FINISH','After 10 items (or when time runs out) the higher score wins. If scores tie, the one who finished first wins.']]],
+ ['FINISH','After the 10 artifacts, a short <b>Part 2</b> adds 15 more questions (discrete or continuous) with extra time. The higher total score wins; a tie goes to whoever finishes first.']]],
+'2b':()=>['PART 2 · DISCRETE OR CONTINUOUS',[['GOAL','15 more items. Decide if each one is <b style="color:#6ec1ff">DISCRETE</b> or <b style="color:#ffb347">CONTINUOUS</b>. Extra time has been added.'],
+ ['WORDS TO KNOW','<b style="color:#6ec1ff">DISCRETE</b> = counted in whole numbers (students, books, goals).<br><b style="color:#ffb347">CONTINUOUS</b> = measured, so it can have decimal values (height, weight, time).'],
+ ['HOW TO PLAY','Same as Part 1. The <b>left</b> button and bin are DISCRETE; the <b>right</b> ones are CONTINUOUS. '+(TOUCH?'Tap a button.':'Click a button or press <b>1</b> / <b>2</b>.')],
+ ['FINISH','Your score counts both parts. Press Start Level to continue.']]],
 3:()=>['TRIAL 3 · NOMINAL, ORDINAL, INTERVAL OR RATIO',[['GOAL','Each question shows an example. Choose the measurement scale it belongs to: <b>Nominal</b>, <b>Ordinal</b>, <b>Interval</b> or <b>Ratio</b>.'],
  ['HOW TO ANSWER',(TOUCH?'Tap':'Click')+' one of the four buttons'+(TOUCH?'':' (or press <b>1 2 3 4</b>')+(TOUCH?'.':').')+' You and your rival take turns; wait for your turn.'],
  ['FEEDBACK','You see <b style="color:#6f6">CORRECT</b> or <b style="color:#f88">INCORRECT</b> with the right scale and a short reason. The next question starts by itself.'],
@@ -256,7 +260,7 @@ function insGo(){if(!INS)return;INS=false;hide('ins');sfx('click')}
 $('insB').onclick=insGo;
 function enterLevel(n){$('prompt').style.display='none';RUNXP=0;lastWin=null;
  if(n===1){mode='l1';document.exitPointerLock();$('hlv').textContent='TRIAL 1 · RANKING OF PIECES';l1start()}
- if(n===2){mode='l2';setScene('l2');Object.assign(P,{x:0,y:0,z:9,vy:0});cam.yaw=0;cam.pitch=.35;$('hlv').textContent='TRIAL 2 · SORTING GAME';document.body.dataset.lv='2';l2start()}
+ if(n===2){mode='l2';setScene('l2');Object.assign(P,{x:0,y:0,z:9,vy:0});cam.yaw=0;cam.pitch=.35;$('hlv').textContent='TRIAL 2 · SORTING GAME';document.body.dataset.lv='2';l2start();l2labels(false)}
  if(n===4){mode='l4';setScene('l4');document.exitPointerLock();$('hlv').textContent='TRIAL 4 · COMPUTATION';l4start()}
  if(n===3){mode='l3';setScene('l3');document.exitPointerLock();$('hlv').textContent='TRIAL 3 · NOMINAL, ORDINAL, INTERVAL OR RATIO';document.body.dataset.lv='3';l3start()}
  if(n===5){mode='l5';setScene('l5');document.exitPointerLock();$('hlv').textContent='TRIAL 5 · EXCEL TECH';l5start()}
@@ -336,20 +340,29 @@ const AIC=()=>({easy:{acc:.65,iv:9},medium:{acc:.85,iv:6.5},hard:{acc:.97,iv:5}}
 function l2start(){const cf=AIC();L2={q:shuf(IT),i:0,carry:null,s:0,m:0,t:90,over:false,fin:null,ai:{i:0,s:0,c:cf.iv,cf}};$('l2h').style.display='block';$('l2h').style.display='block';
  insShow(2)}
 const QN={ql:'QUALITATIVE',qn:'QUANTITATIVE'};
+/* Level 2, Part 2 (added after the 10 qualitative/quantitative artifacts): 15 discrete/continuous items.
+   Left bin / first button = DISCRETE (type 'ql'), right bin / second button = CONTINUOUS (type 'qn'). */
+const IT2=[['Number of students absent in a classroom', 'ql', 'Students are counted one by one.'], ['Height of a Grade 11 student', 'qn', 'Height is measured and can have decimals.'], ['Number of siblings a person has', 'ql', 'Siblings are counted in whole numbers.'], ['Weight of a newborn baby', 'qn', 'Weight is measured and can have decimals.'], ['Number of cars passing a street', 'ql', 'Cars are counted in whole numbers.'], ['Time spent finishing an examination', 'qn', 'Time is measured and can have decimals.'], ['Number of books on a shelf', 'ql', 'Books are counted in whole numbers.'], ['Temperature in a classroom', 'qn', 'Temperature is measured and can have decimals.'], ['Number of text messages received in a day', 'ql', 'Messages are counted in whole numbers.'], ['Distance traveled by a motorcycle', 'qn', 'Distance is measured and can have decimals.'], ['Number of goals scored in a soccer game', 'ql', 'Goals are counted in whole numbers.'], ['Amount of water in a bottle', 'qn', 'Amount of water is measured and can have decimals.'], ['Number of teachers in a school', 'ql', 'Teachers are counted in whole numbers.'], ['Time needed to run 100 meters', 'qn', 'Time is measured and can have decimals.'], ['Amount of rainfall in a day', 'qn', 'Rainfall is measured and can have decimals.']];
+const QN2={ql:'DISCRETE',qn:'CONTINUOUS'},L2T=25,L2P2T=105;
+const qnm=t=>(L2&&L2.part2?QN2:QN)[t];
+function l2labels(p2){const q=$('l2q'),n=$('l2n');if(!q||!n)return;const sm=t=>'<small style="display:block;font-size:.62em;opacity:.8">'+t+'</small>';
+ q.innerHTML=p2?'DISCRETE'+sm('counted: whole numbers'):'QUALITATIVE'+sm('words / labels');n.innerHTML=p2?'CONTINUOUS'+sm('measured: can have decimals'):'QUANTITATIVE'+sm('numbers / amounts')}
+function l2part2(){const s=L2;s.part2=true;s.q=s.q.concat(shuf(IT2.slice()));s.t+=L2P2T;l2labels(true);insShow('2b')}
+
 function drop(type){const s=L2,it=s.carry,ok=it[1]===type;s.carry=null;s.i++;
- if(ok){s.s++;addXP(10);sfx('good');toast(`<b style="color:#6f6">✔ CORRECT</b> — ${it[0]} is ${QN[it[1]]}. ${it[2]}`,'good',3000)}
- else{s.m++;act('damage',.5);sfx('bad');toast(`<b style="color:#f88">✖ INCORRECT</b> — ${it[0]} is ${QN[it[1]]}, not ${QN[type]}. ${it[2]}`,'bad',4200)}
- if(s.i>=10){s.fin=s.fin||'p';l2end()}}
+ if(ok){s.s++;addXP(10);sfx('good');toast(`<b style="color:#6f6">✔ CORRECT</b> — ${it[0]} is ${qnm(it[1])}. ${it[2]}`,'good',3000)}
+ else{s.m++;act('damage',.5);sfx('bad');toast(`<b style="color:#f88">✖ INCORRECT</b> — ${it[0]} is ${qnm(it[1])}, not ${qnm(type)}. ${it[2]}`,'bad',4200)}
+ if(s.i>=L2T){s.fin=s.fin||'p';l2end()}else if(s.i===10&&!s.part2)l2part2()}
 function nearL2(){const s=L2;if(!s||s.over)return null;
- if(!s.carry&&s.i<10&&Math.hypot(P.x,P.z-3)<2.9)return{t:'Press E — lift the artifact',f:()=>{s.carry=s.q[s.i];sfx('click')}};
- if(s.carry)for(const b of [[-6,'ql'],[6,'qn']])if(Math.hypot(P.x-b[0],P.z+5)<3.4)return{t:`Press E — drop into the ${QN[b[1]]} bin`,f:()=>drop(b[1])};return null}
+ if(!s.carry&&s.i<s.q.length&&Math.hypot(P.x,P.z-3)<2.9)return{t:'Press E — lift the artifact',f:()=>{s.carry=s.q[s.i];sfx('click')}};
+ if(s.carry)for(const b of [[-6,'ql'],[6,'qn']])if(Math.hypot(P.x-b[0],P.z+5)<3.4)return{t:`Press E — drop into the ${qnm(b[1])} bin`,f:()=>drop(b[1])};return null}
 function l2update(dt){const s=L2;if(!s||s.over||dlg)return;s.t-=dt;s.ai.c-=dt;
- if(s.ai.c<=0&&s.ai.i<10){s.ai.i++;if(Math.random()<s.ai.cf.acc)s.ai.s++;s.ai.c=s.ai.cf.iv*rnd(.8,1.25);if(s.ai.i>=10){s.fin=s.fin||'a';l2end()}}
+ if(s.ai.c<=0&&s.ai.i<L2T&&(s.part2||s.ai.i<10)){s.ai.i++;if(Math.random()<s.ai.cf.acc)s.ai.s++;s.ai.c=s.ai.cf.iv*rnd(.8,1.25);if(s.ai.i>=L2T){s.fin=s.fin||'a';l2end()}}
  if(s.t<=0)l2end();
- $('l2t').textContent=Math.max(0,Math.ceil(s.t))+'s';$('l2y').textContent=`YOU  ✔${s.s} ✖${s.m}  (${s.i}/10)`;$('l2r').textContent=`RIVAL (${diff.toUpperCase()})  ✔${s.ai.s}  (${s.ai.i}/10)`;$('l2yb').style.width=s.i*10+'%';$('l2rb').style.width=s.ai.i*10+'%';
+ $('l2t').textContent=Math.max(0,Math.ceil(s.t))+'s';$('l2y').textContent=`YOU  ✔${s.s} ✖${s.m}  (${s.i}/${s.part2?L2T:10})`;$('l2r').textContent=`RIVAL (${diff.toUpperCase()})  ✔${s.ai.s}  (${Math.min(s.ai.i,s.part2?L2T:10)}/${s.part2?L2T:10})`;$('l2yb').style.width=Math.min(100,s.i/(s.part2?L2T:10)*100)+'%';$('l2rb').style.width=Math.min(100,s.ai.i/(s.part2?L2T:10)*100)+'%';
  $('l2c').textContent=s.carry?'Carrying: '+s.carry[0]:'Score = correct sorts · first to finish breaks ties'}
 function l2end(){const s=L2;if(s.over)return;s.over=true;const win=s.s>s.ai.s||(s.s===s.ai.s&&(s.fin==='p'||(!s.fin&&s.i>s.ai.i)));
- setTimeout(()=>finish(2,win,[`Your score: ${s.s}/10 (${s.m} mistakes) · Rival: ${s.ai.s}/10`,s.t<=0?'Time ran out.':'The race is over.']),600)}
+ setTimeout(()=>finish(2,win,[`Your score: ${s.s}/${s.part2?L2T:10} (${s.m} mistakes) · Rival: ${s.ai.s}/${s.part2?L2T:10}`,s.t<=0?'Time ran out.':'The race is over.']),600)}
 
 /* ===== LEVEL 4: COMPUTATION (3D water survival) ===== */
 const NQ=[['Mean',[10,14,12,16,18]],['Median',[15,8,22,11,19]],['Mode',[4,7,4,9,7,4]],['Mode',[12,15,12,19,15,12]],['Mode',[5,8,5,11,14,8,8]],['Range',[5,12,19,3,25]],['Range',[14,28,7,35,21]],['Range',[40,15,25,10,50]],['Range',[8,22,14,30,6]],['Range',[18,9,45,12,27]]];
@@ -656,8 +669,8 @@ function drawWorld(){D=[];DT=[];
   drawChar(D,STYL,9,0,5,Math.PI,0);if(mode==='academy'||mode==='menu')lab('shp','STYLE SHOP',9,3.6,5,'');lab('lrn','LEARNING ROOM',-9,3.9,5,'');crystal(-4.5,3,-11,'#4aa8ff',.8);crystal(4.5,3,-11,'#ffd84a',.8);
   if(mode==='academy')drawChar(D,CH[S.ch],P.x,P.y,P.z,P.yaw,P.ph)}
  else if(scene==='l2'&&L2){const s=L2;
-  lab('bq','QUALITATIVE BIN',-6,2.7,-5,'sub');lab('bn','QUANTITATIVE BIN',6,2.7,-5,'sub');lab('t','SORTING CHAMBER',0,6.5,-8.7,'big');
-  if(!s.carry&&s.i<10){const y=1.7+Math.sin(time*2)*.15;T=[0,0,3,time];B(D,-.4,y,-.4,.8,.8,.8,'#f2dc7a');T=[0,0,0,0];lab('it',s.q[s.i][0],0,y+1.3,3)}
+  lab('bq',s.part2?'DISCRETE BIN':'QUALITATIVE BIN',-6,2.7,-5,'sub');lab('bn',s.part2?'CONTINUOUS BIN':'QUANTITATIVE BIN',6,2.7,-5,'sub');lab('t','SORTING CHAMBER',0,6.5,-8.7,'big');
+  if(!s.carry&&s.i<s.q.length){const y=1.7+Math.sin(time*2)*.15;T=[0,0,3,time];B(D,-.4,y,-.4,.8,.8,.8,'#f2dc7a');T=[0,0,0,0];lab('it',s.q[s.i][0],0,y+1.3,3)}
   crystal(-8.5,3,-8,'#4aa8ff',1);crystal(8.5,3,-8,'#e8862e',1);
   drawChar(D,CH[S.ch],P.x,P.y,P.z,P.yaw,P.ph);
   if(s.carry){T=[P.x,P.y+2.4,P.z,time];B(D,-.35,0,-.35,.7,.7,.7,'#f2dc7a');T=[0,0,0,0];lab('it',s.carry[0],P.x,P.y+3.6,P.z)}}
