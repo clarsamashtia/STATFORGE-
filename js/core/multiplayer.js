@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   /* ---------- configuration (edit ONLY this line after deploying the server) ---------- */
-  const PROD_WS = 'wss://statforge-zf12.onrender.com/ws';
+  const PROD_WS = 'wss://statforge-zf12.onrender.com/ws';                                   
   function serverURL() {
     const q = new URLSearchParams(location.search).get('server'); let saved = '';
     if (q) { try { localStorage.setItem('statforge_server', q); } catch (e) {} }
@@ -262,7 +262,7 @@
   /* ---------- friendly-level adapters: same game, real opponent progress instead of the AI ---------- */
   function onEv(d) {
     switch (d.k) {
-      case 'l2': if (L2 && L2.mp) { L2.ai.i = d.i; L2.ai.s = d.s; if (d.i >= 10) { L2.fin = L2.fin || 'a'; l2end(); } } break;
+      case 'l2': if (L2 && L2.mp) { L2.ai.i = d.i; L2.ai.s = d.s; if (d.i >= L2T) { L2.fin = L2.fin || 'a'; l2end(); } } break;
       case 'l3a': if (L3 && L3.mp) { if (L3.ph === 'ask' && L3.who === 1) l3remote(d.c); else L3.pend = d.c; } break;
       case 'l4': if (L4 && L4.mp) { L4.ah = d.h; L4.rw = d.w; if (d.ok) { L4.rok[d.q] = 1; if (d.q === L4.i && L4.ph === 'ask') L4.first = true; } } break;
       case 'l4end': if (L4 && L4.mp) { L4.rend = { h: d.h, lost: d.lost }; if (d.lost) L4.ah = 0; l4tryEnd(); } break;
